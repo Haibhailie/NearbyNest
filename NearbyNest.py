@@ -62,6 +62,21 @@ def find_nearest_walmart(lat, lng, api_key):
         return walmart_address, round(distance, 2)  # Round distance to 2 significant figures
     return None, None
 
+# Function to find nearest grocery store and return its name, address, and distance
+def find_nearest_grocery(lat, lng, api_key):
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=50000&type=store&keyword=grocery&key={api_key}"
+    response = requests.get(url).json()
+    if response['results']:
+        grocery = response['results'][0]
+        grocery_name = grocery.get('name', 'Grocery Store')  # Get Grocery store name
+        grocery_address = grocery.get('vicinity', 'Address not available')  # Get Grocery store address
+        grocery_location = grocery['geometry']['location']
+        grocery_lat = grocery_location['lat']
+        grocery_lng = grocery_location['lng']
+        distance = geodesic((lat, lng), (grocery_lat, grocery_lng)).km
+        return grocery_name, grocery_address, round(distance, 2)  # Return grocery name, address, and distance
+    return None, None, None
+
 # Main script
 def main():
     # Set the current province
@@ -96,18 +111,23 @@ def main():
         costco_address, distance_to_costco = find_nearest_costco(lat, lng, api_key)
         # Find nearest Walmart
         walmart_address, distance_to_walmart = find_nearest_walmart(lat, lng, api_key)
+        # Find nearest Grocery Store
+        grocery_name, grocery_address, distance_to_grocery = find_nearest_grocery(lat, lng, api_key)
 
-        if costco_address and distance_to_costco and walmart_address and distance_to_walmart:
+        if costco_address and distance_to_costco and walmart_address and distance_to_walmart and grocery_address and distance_to_grocery:
             results.append({
                 'MLS': row['MLS'],
                 'Address': address,
                 'Costco Address': costco_address,
                 'Distance to Costco (km)': distance_to_costco,
                 'Walmart Address': walmart_address,
-                'Distance to Walmart (km)': distance_to_walmart
+                'Distance to Walmart (km)': distance_to_walmart,
+                'Grocery Store Name': grocery_name,
+                'Grocery Store Address': grocery_address,
+                'Distance to Grocery Store (km)': distance_to_grocery
             })
         else:
-            print(f"No Costco or Walmart found for address: {address}")
+            print(f"No Costco, Walmart, or Grocery store found for address: {address}")
 
     if not results:
         print("No results were generated. Ensure addresses are in the current province or check for errors.")
@@ -116,8 +136,8 @@ def main():
     result_df = pd.DataFrame(results)
 
     # Save results to CSV
-    result_df.to_csv('results.csv', index=False)
-    print("CSV with Costco and Walmart distances generated successfully.")
+    result_df.to_csv('results_with_grocery.csv', index=False)
+    print("CSV with Costco, Walmart, and Grocery distances generated successfully.")
 
 if __name__ == "__main__":
     main()
