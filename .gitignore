@@ -1,6 +1,7 @@
 # Ignore sensitive files
 addresses.csv
 config.json
+results.csv
 
 # Python specific ignores
 __pycache__/

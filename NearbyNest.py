@@ -116,7 +116,7 @@ def main():
     result_df = pd.DataFrame(results)
 
     # Save results to CSV
-    result_df.to_csv('costco_walmart_distances.csv', index=False)
+    result_df.to_csv('results.csv', index=False)
     print("CSV with Costco and Walmart distances generated successfully.")
 
 if __name__ == "__main__":
