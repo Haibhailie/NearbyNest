@@ -1,0 +1,12 @@
+# Ignore sensitive files
+addresses.csv
+config.json
+
+# Python specific ignores
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.env
+.venv
