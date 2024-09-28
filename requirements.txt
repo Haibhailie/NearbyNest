@@ -1,0 +1,6 @@
+
+customtkinter
+pandas
+geopy
+requests
+openpyxl
